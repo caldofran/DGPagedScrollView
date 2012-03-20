@@ -17,7 +17,7 @@
 @property (retain,nonatomic) UIPageControl* pageControl;
 - (UIView *)dummyViewWithFrame:(CGRect)frame;
 - (void) updatePageControlPosition;
-- (void) checkAndInsertPageAtIndex:(NSInteger)index;
+- (void) checkAndInsertPageAtIndex:(NSUInteger)index;
 - (void) changePage:(UIPageControl*) aPageControl;
 - (void) changePage:(UIPageControl*) aPageControl animated:(BOOL)animated;
 @end
@@ -68,7 +68,7 @@
     self.views=[newViews autorelease];
     [self insertSubview:view belowSubview:self.pageControl];
     [view release];
-    //DebugLog(@"Add %d %@",index,self.views);
+    //NSLog(@"Add %d %@",index,self.views);
     [self updatePageControlPosition];
 }
 - (void) removePage:(UIView *)view {
@@ -76,7 +76,7 @@
 }
 - (void)removePageAtIndex:(NSUInteger)index {
     if(index<[self.views count]){
-        UIView *viewToRemove=[self.views objectAtIndex:index];
+        UIView *viewToRemove=[[self.views objectAtIndex:index]retain];
         NSMutableArray *newViews=[self.views mutableCopy];
         [newViews removeObject:viewToRemove]; 
         if(index!=([self.views count]-1)){
@@ -85,7 +85,8 @@
         self.views=newViews;
         [newViews release];
         [self removePage:viewToRemove];
-        //////DebugLog(@"Remove %d %@",index,self.views);
+        [viewToRemove release];
+        //NSLog(@"Remove %d %@",index,self.views);
         [self updatePageControlPosition];
     }
 }
@@ -122,7 +123,7 @@
 - (void)setPageControlHidden:(BOOL)pageControlHidden{
     self.pageControl.hidden=pageControlHidden;
 }
-- (void) checkAndInsertPageAtIndex:(NSInteger)index{
+- (void) checkAndInsertPageAtIndex:(NSUInteger)index{
     UIView *viewToShow=nil;
     if(index<[self.views count]){
         viewToShow=[self pageAtIndex:index];
@@ -233,7 +234,8 @@
     CGFloat heightInset = inset.top + inset.bottom;
     self.contentSize = CGSizeMake(self.frame.size.width * [self.views count], self.frame.size.height - heightInset);
     self.currentPage=page;
-    [self checkAndInsertPageAtIndex:(page-1)];
+    if(page>0)
+        [self checkAndInsertPageAtIndex:(page-1)];
     [self layoutSubviews];
     [self setContentOffset:CGPointMake(page * self.frame.size.width, - self.scrollIndicatorInsets.top) animated:animated];
 }

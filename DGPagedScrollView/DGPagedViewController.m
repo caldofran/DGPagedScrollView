@@ -76,7 +76,6 @@ typedef enum {
 
 #pragma mark - UIScrollViewDelegate Methods
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    //LogMethod();
     static NSInteger previousPage = 0;
     NSInteger page=self.currentPage;
     if (previousPage != page && page>=0) {
